@@ -1,287 +1,332 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Console de Teste — Firebase Authentication </title>
 
-<!-- Firebase via CDN, SDK "compat": expõe o objeto global `firebase`,
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Console de Teste — Firebase Authentication </title>
+
+  <!-- Firebase via CDN, SDK "compat": expõe o objeto global `firebase`,
      igual à sintaxe clássica, sem precisar de import/module -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="firebase-config.js"></script>
+
 
 </head>
+
 <body>
 
-<header>
-  <div class="tag">FIREBASE AUTHENTICATION · CONSOLE DE TESTE</div>
-  <h1>Testar cadastro, login e e-mails do Authentication </h1>
-</header>
+  <header>
+    <div class="tag">FIREBASE AUTHENTICATION · CONSOLE DE TESTE</div>
+    <h1>Testar cadastro, login e e-mails do Authentication </h1>
+  </header>
 
-<div class="layout">
+  <div class="layout">
 
-  <!-- COLUNA ESQUERDA: formulários e ações -->
-  <div>
+    <!-- COLUNA ESQUERDA: formulários e ações -->
+    <div>
 
-    <div class="card">
-      <h2>1. Configuração do Firebase</h2>
-      <p class="hint">Preencha com o firebaseConfig do SEU projeto (Firebase Console &gt; Configurações &gt; Geral &gt; Seus apps). Depois de colar, salve o arquivo e recarregue a página.</p>
-      <p class="hint">O objeto de configuração está definido no início do bloco <code class="small">&lt;script&gt;</code>, no final desta página — procure por <code class="small">firebaseConfig</code>.</p>
+      <div class="card">
+        <h2>1. Configuração do Firebase</h2>
+        <p class="hint">Preencha com o firebaseConfig do SEU projeto (Firebase Console &gt; Configurações &gt; Geral
+          &gt; Seus apps). Depois de colar, salve o arquivo e recarregue a página.</p>
+        <p class="hint">O objeto de configuração está definido no início do bloco <code
+            class="small">&lt;script&gt;</code>, no final desta página — procure por <code
+            class="small">firebaseConfig</code>.</p>
+      </div>
+
+      <div class="card">
+        <h2>2. Cadastro (createUserWithEmailAndPassword)</h2>
+        <label for="cadEmail">E-mail</label>
+        <input id="cadEmail" type="email" placeholder="teste@exemplo.com">
+        <label for="cadSenha">Senha</label>
+        <input id="cadSenha" type="password" placeholder="mínimo 6 caracteres">
+        <div class="row">
+          <button onclick="acaoCadastrar()">Criar conta</button>
+        </div>
+        <p class="hint">Testa: <code class="small">weak-password</code>, <code
+            class="small">email-already-in-use</code>, <code class="small">invalid-email</code></p>
+      </div>
+
+      <div class="card">
+        <h2>3. Login (signInWithEmailAndPassword)</h2>
+        <label for="logEmail">E-mail</label>
+        <input id="logEmail" type="email" placeholder="teste@exemplo.com">
+        <label for="logSenha">Senha</label>
+        <input id="logSenha" type="password" placeholder="sua senha">
+        <div class="row">
+          <button onclick="acaoLogin()">Entrar</button>
+          <button class="secondary" onclick="acaoLogout()">Sair</button>
+        </div>
+        <p class="hint">Testa: <code class="small">wrong-password</code>, <code class="small">user-not-found</code>,
+          <code class="small">invalid-credential</code>, <code class="small">too-many-requests</code>, <code
+            class="small">user-disabled</code>
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>4. Usuário atual</h2>
+        <div id="status">Nenhum usuário logado</div>
+      </div>
+
+      <div class="card">
+        <h2>5. E-mails do Authentication</h2>
+
+        <label for="emailVerifDestino">E-mail de verificação (usuário logado)</label>
+        <div class="row">
+          <button class="gold" onclick="acaoEnviarVerificacao()">Enviar e-mail de verificação</button>
+        </div>
+        <p class="hint">Exige estar logado. Testa: sucesso, <code class="small">too-many-requests</code></p>
+
+        <label for="resetEmail">E-mail de redefinição de senha (qualquer e-mail)</label>
+        <input id="resetEmail" type="email" placeholder="teste@exemplo.com">
+        <div class="row">
+          <button class="gold" onclick="acaoResetSenha()">Enviar e-mail de redefinição</button>
+        </div>
+        <p class="hint">Testa: sucesso, <code class="small">invalid-email</code>, <code
+            class="small">missing-email</code></p>
+
+        <label for="novoEmail">Atualizar e-mail (verifyBeforeUpdateEmail, usuário logado)</label>
+        <input id="novoEmail" type="email" placeholder="novo-email@exemplo.com">
+        <div class="row">
+          <button class="gold" onclick="acaoAtualizarEmail()">Enviar confirmação para novo e-mail</button>
+        </div>
+        <p class="hint">Testa: sucesso, <code class="small">requires-recent-login</code>, <code
+            class="small">email-already-in-use</code></p>
+
+        <label for="novaSenha">Atualizar senha (usuário logado)</label>
+        <input id="novaSenha" type="password" placeholder="nova senha">
+        <div class="row">
+          <button class="gold" onclick="acaoAtualizarSenha()">Atualizar senha</button>
+        </div>
+        <p class="hint">Testa: sucesso, <code class="small">requires-recent-login</code>, <code
+            class="small">weak-password</code></p>
+      </div>
+
+      <div class="card">
+        <h2>6. Reautenticação e exclusão</h2>
+        <p class="hint">Use isto quando uma ação acima retornar <code class="small">requires-recent-login</code>:
+          reautentique com e-mail/senha e tente de novo.</p>
+        <label for="reautSenha">Confirmar senha atual do usuário logado</label>
+        <input id="reautSenha" type="password" placeholder="senha atual">
+        <div class="row">
+          <button class="secondary" onclick="acaoReautenticar()">Reautenticar</button>
+          <button class="warn" onclick="acaoExcluirConta()">Excluir conta</button>
+        </div>
+        <p class="hint">Excluir conta testa: sucesso, <code class="small">requires-recent-login</code></p>
+      </div>
+
     </div>
 
-    <div class="card">
-      <h2>2. Cadastro (createUserWithEmailAndPassword)</h2>
-      <label for="cadEmail">E-mail</label>
-      <input id="cadEmail" type="email" placeholder="teste@exemplo.com">
-      <label for="cadSenha">Senha</label>
-      <input id="cadSenha" type="password" placeholder="mínimo 6 caracteres">
-      <div class="row">
-        <button onclick="acaoCadastrar()">Criar conta</button>
+    <!-- COLUNA DIREITA: console de mensagens + cheat sheet -->
+    <div>
+      <div class="card">
+        <h2>Console de mensagens</h2>
+        <div id="console"></div>
+        <div class="row">
+          <button class="secondary" onclick="limparConsole()">Limpar console</button>
+        </div>
       </div>
-      <p class="hint">Testa: <code class="small">weak-password</code>, <code class="small">email-already-in-use</code>, <code class="small">invalid-email</code></p>
-    </div>
 
-    <div class="card">
-      <h2>3. Login (signInWithEmailAndPassword)</h2>
-      <label for="logEmail">E-mail</label>
-      <input id="logEmail" type="email" placeholder="teste@exemplo.com">
-      <label for="logSenha">Senha</label>
-      <input id="logSenha" type="password" placeholder="sua senha">
-      <div class="row">
-        <button onclick="acaoLogin()">Entrar</button>
-        <button class="secondary" onclick="acaoLogout()">Sair</button>
+      <div class="card">
+        <h2>Cheat sheet de códigos de erro</h2>
+        <table class="cheatsheet">
+          <tr>
+            <th>Código</th>
+            <th>Situação</th>
+          </tr>
+          <tr>
+            <td><code class="small">auth/email-already-in-use</code></td>
+            <td>E-mail já cadastrado</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/invalid-email</code></td>
+            <td>Formato de e-mail inválido</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/weak-password</code></td>
+            <td>Senha com menos de 6 caracteres</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/wrong-password</code></td>
+            <td>Senha incorreta no login</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/user-not-found</code></td>
+            <td>Nenhuma conta com esse e-mail</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/invalid-credential</code></td>
+            <td>E-mail ou senha incorretos (SDKs recentes)</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/user-disabled</code></td>
+            <td>Conta desativada no console</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/too-many-requests</code></td>
+            <td>Muitas tentativas seguidas</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/requires-recent-login</code></td>
+            <td>Ação sensível exige login recente</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/missing-email</code></td>
+            <td>Nenhum e-mail informado</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/operation-not-allowed</code></td>
+            <td>Provedor E-mail/senha desativado no console</td>
+          </tr>
+          <tr>
+            <td><code class="small">auth/network-request-failed</code></td>
+            <td>Falha de conexão</td>
+          </tr>
+        </table>
+        <p class="hint" style="margin-top:10px">Dica: para forçar <code class="small">too-many-requests</code>, erre a
+          senha várias vezes seguidas na mesma conta.</p>
       </div>
-      <p class="hint">Testa: <code class="small">wrong-password</code>, <code class="small">user-not-found</code>, <code class="small">invalid-credential</code>, <code class="small">too-many-requests</code>, <code class="small">user-disabled</code></p>
-    </div>
-
-    <div class="card">
-      <h2>4. Usuário atual</h2>
-      <div id="status">Nenhum usuário logado</div>
-    </div>
-
-    <div class="card">
-      <h2>5. E-mails do Authentication</h2>
-
-      <label for="emailVerifDestino">E-mail de verificação (usuário logado)</label>
-      <div class="row">
-        <button class="gold" onclick="acaoEnviarVerificacao()">Enviar e-mail de verificação</button>
-      </div>
-      <p class="hint">Exige estar logado. Testa: sucesso, <code class="small">too-many-requests</code></p>
-
-      <label for="resetEmail">E-mail de redefinição de senha (qualquer e-mail)</label>
-      <input id="resetEmail" type="email" placeholder="teste@exemplo.com">
-      <div class="row">
-        <button class="gold" onclick="acaoResetSenha()">Enviar e-mail de redefinição</button>
-      </div>
-      <p class="hint">Testa: sucesso, <code class="small">invalid-email</code>, <code class="small">missing-email</code></p>
-
-      <label for="novoEmail">Atualizar e-mail (verifyBeforeUpdateEmail, usuário logado)</label>
-      <input id="novoEmail" type="email" placeholder="novo-email@exemplo.com">
-      <div class="row">
-        <button class="gold" onclick="acaoAtualizarEmail()">Enviar confirmação para novo e-mail</button>
-      </div>
-      <p class="hint">Testa: sucesso, <code class="small">requires-recent-login</code>, <code class="small">email-already-in-use</code></p>
-
-      <label for="novaSenha">Atualizar senha (usuário logado)</label>
-      <input id="novaSenha" type="password" placeholder="nova senha">
-      <div class="row">
-        <button class="gold" onclick="acaoAtualizarSenha()">Atualizar senha</button>
-      </div>
-      <p class="hint">Testa: sucesso, <code class="small">requires-recent-login</code>, <code class="small">weak-password</code></p>
-    </div>
-
-    <div class="card">
-      <h2>6. Reautenticação e exclusão</h2>
-      <p class="hint">Use isto quando uma ação acima retornar <code class="small">requires-recent-login</code>: reautentique com e-mail/senha e tente de novo.</p>
-      <label for="reautSenha">Confirmar senha atual do usuário logado</label>
-      <input id="reautSenha" type="password" placeholder="senha atual">
-      <div class="row">
-        <button class="secondary" onclick="acaoReautenticar()">Reautenticar</button>
-        <button class="warn" onclick="acaoExcluirConta()">Excluir conta</button>
-      </div>
-      <p class="hint">Excluir conta testa: sucesso, <code class="small">requires-recent-login</code></p>
     </div>
 
   </div>
 
-  <!-- COLUNA DIREITA: console de mensagens + cheat sheet -->
-  <div>
-    <div class="card">
-      <h2>Console de mensagens</h2>
-      <div id="console"></div>
-      <div class="row">
-        <button class="secondary" onclick="limparConsole()">Limpar console</button>
-      </div>
-    </div>
 
-    <div class="card">
-      <h2>Cheat sheet de códigos de erro</h2>
-      <table class="cheatsheet">
-        <tr><th>Código</th><th>Situação</th></tr>
-        <tr><td><code class="small">auth/email-already-in-use</code></td><td>E-mail já cadastrado</td></tr>
-        <tr><td><code class="small">auth/invalid-email</code></td><td>Formato de e-mail inválido</td></tr>
-        <tr><td><code class="small">auth/weak-password</code></td><td>Senha com menos de 6 caracteres</td></tr>
-        <tr><td><code class="small">auth/wrong-password</code></td><td>Senha incorreta no login</td></tr>
-        <tr><td><code class="small">auth/user-not-found</code></td><td>Nenhuma conta com esse e-mail</td></tr>
-        <tr><td><code class="small">auth/invalid-credential</code></td><td>E-mail ou senha incorretos (SDKs recentes)</td></tr>
-        <tr><td><code class="small">auth/user-disabled</code></td><td>Conta desativada no console</td></tr>
-        <tr><td><code class="small">auth/too-many-requests</code></td><td>Muitas tentativas seguidas</td></tr>
-        <tr><td><code class="small">auth/requires-recent-login</code></td><td>Ação sensível exige login recente</td></tr>
-        <tr><td><code class="small">auth/missing-email</code></td><td>Nenhum e-mail informado</td></tr>
-        <tr><td><code class="small">auth/operation-not-allowed</code></td><td>Provedor E-mail/senha desativado no console</td></tr>
-        <tr><td><code class="small">auth/network-request-failed</code></td><td>Falha de conexão</td></tr>
-      </table>
-      <p class="hint" style="margin-top:10px">Dica: para forçar <code class="small">too-many-requests</code>, erre a senha várias vezes seguidas na mesma conta.</p>
-    </div>
-  </div>
+  <script>
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
-</div>
+    // ------------------------------------------------------
+    // Console de mensagens
+    // ------------------------------------------------------
 
-<script>
-  // ======================================================
-  // 1. COLE AQUI O firebaseConfig DO SEU PROJETO
-  // ======================================================
- const firebaseConfig = {
-    apiKey: "AIzaSyAVY6TlmRKPrmUwRmn4iFFiD8eWdylEbFs",
-    authDomain: "desenvolvimento-hibrido.firebaseapp.com",
-    projectId: "desenvolvimento-hibrido",
-    storageBucket: "desenvolvimento-hibrido.firebasestorage.app",
-    messagingSenderId: "501179141126",
-    appId: "1:501179141126:web:de941fb965d7f2beb6c787"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-
-  // ------------------------------------------------------
-  // Console de mensagens
-  // ------------------------------------------------------
-  function log(tipo, codigoOuTitulo, detalhe) {
-    const box = document.getElementById('console');
-    const linha = document.createElement('div');
-    linha.className = 'linha';
-    const hora = new Date().toLocaleTimeString('pt-BR');
-    const classe = tipo === 'ok' ? 'ok' : 'erro';
-    const rotulo = tipo === 'ok' ? 'SUCESSO' : 'ERRO';
-    linha.innerHTML =
-      '<span class="hora">' + hora + '</span>' +
-      '<span class="' + classe + '">[' + rotulo + '] ' + codigoOuTitulo + '</span><br>' +
-      (detalhe ? detalhe : '');
-    box.prepend(linha);
-  }
-
-  function limparConsole() {
-    document.getElementById('console').innerHTML = '';
-  }
-
-  function logErro(erro) {
-    log('erro', erro.code || 'erro-desconhecido', erro.message);
-  }
-
-  // ------------------------------------------------------
-  // Status do usuário logado
-  // ------------------------------------------------------
-  auth.onAuthStateChanged((usuario) => {
-    const status = document.getElementById('status');
-    if (usuario) {
-      status.classList.add('logado');
-      status.innerHTML =
-        'Logado como <strong>' + usuario.email + '</strong><br>' +
-        'E-mail verificado: ' + (usuario.emailVerified ? 'sim' : 'não') + '<br>' +
-        'UID: ' + usuario.uid;
-    } else {
-      status.classList.remove('logado');
-      status.textContent = 'Nenhum usuário logado';
+    function log(tipo, codigoOuTitulo, detalhe) {
+      const box = document.getElementById('console');
+      const linha = document.createElement('div');
+      linha.className = 'linha';
+      const hora = new Date().toLocaleTimeString('pt-BR');
+      const classe = tipo === 'ok' ? 'ok' : 'erro';
+      const rotulo = tipo === 'ok' ? 'SUCESSO' : 'ERRO';
+      linha.innerHTML =
+        '<span class="hora">' + hora + '</span>' +
+        '<span class="' + classe + '">[' + rotulo + '] ' + codigoOuTitulo + '</span><br>' +
+        (detalhe ? detalhe : '');
+      box.prepend(linha);
     }
-  });
 
-  // ------------------------------------------------------
-  // Ações: cadastro e login
-  // ------------------------------------------------------
-  function acaoCadastrar() {
-    const email = document.getElementById('cadEmail').value;
-    const senha = document.getElementById('cadSenha').value;
-    auth.createUserWithEmailAndPassword(email, senha)
-      .then((credencial) => {
-        log('ok', 'Conta criada', 'uid: ' + credencial.user.uid);
-      })
-      .catch(logErro);
-  }
+    function limparConsole() {
+      document.getElementById('console').innerHTML = '';
+    }
 
-  function acaoLogin() {
-    const email = document.getElementById('logEmail').value;
-    const senha = document.getElementById('logSenha').value;
-    auth.signInWithEmailAndPassword(email, senha)
-      .then((credencial) => {
-        log('ok', 'Login realizado', 'uid: ' + credencial.user.uid);
-      })
-      .catch(logErro);
-  }
+    function logErro(erro) {
+      log('erro', erro.code || 'erro-desconhecido', erro.message);
+    }
 
-  function acaoLogout() {
-    auth.signOut()
-      .then(() => log('ok', 'Logout realizado'))
-      .catch(logErro);
-  }
+    // ------------------------------------------------------
+    // Status do usuário logado
+    // ------------------------------------------------------
+    auth.onAuthStateChanged((usuario) => {
+      const status = document.getElementById('status');
+      if (usuario) {
+        status.classList.add('logado');
+        status.innerHTML =
+          'Logado como <strong>' + usuario.email + '</strong><br>' +
+          'E-mail verificado: ' + (usuario.emailVerified ? 'sim' : 'não') + '<br>' +
+          'UID: ' + usuario.uid;
+      } else {
+        status.classList.remove('logado');
+        status.textContent = 'Nenhum usuário logado';
+      }
+    });
 
-  // ------------------------------------------------------
-  // Ações: e-mails do Authentication
-  // ------------------------------------------------------
-  function acaoEnviarVerificacao() {
-    const usuario = auth.currentUser;
-    if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
-    usuario.sendEmailVerification()
-      .then(() => log('ok', 'E-mail de verificação enviado', 'Enviado para: ' + usuario.email))
-      .catch(logErro);
-  }
+    // ------------------------------------------------------
+    // Ações: cadastro e login
+    // ------------------------------------------------------
+    function acaoCadastrar() {
+      const email = document.getElementById('cadEmail').value;
+      const senha = document.getElementById('cadSenha').value;
+      auth.createUserWithEmailAndPassword(email, senha)
+        .then((credencial) => {
+          log('ok', 'Conta criada', 'uid: ' + credencial.user.uid);
+        })
+        .catch(logErro);
+    }
 
-  function acaoResetSenha() {
-    const email = document.getElementById('resetEmail').value;
-    auth.sendPasswordResetEmail(email)
-      .then(() => log('ok', 'E-mail de redefinição enviado', 'Enviado para: ' + email))
-      .catch(logErro);
-  }
+    function acaoLogin() {
+      const email = document.getElementById('logEmail').value;
+      const senha = document.getElementById('logSenha').value;
+      auth.signInWithEmailAndPassword(email, senha)
+        .then((credencial) => {
+          log('ok', 'Login realizado', 'uid: ' + credencial.user.uid);
+        })
+        .catch(logErro);
+    }
 
-  function acaoAtualizarEmail() {
-    const usuario = auth.currentUser;
-    const novoEmail = document.getElementById('novoEmail').value;
-    if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
-    usuario.verifyBeforeUpdateEmail(novoEmail)
-      .then(() => log('ok', 'Confirmação enviada ao novo e-mail', 'Enviado para: ' + novoEmail))
-      .catch(logErro);
-  }
+    function acaoLogout() {
+      auth.signOut()
+        .then(() => log('ok', 'Logout realizado'))
+        .catch(logErro);
+    }
 
-  function acaoAtualizarSenha() {
-    const usuario = auth.currentUser;
-    const novaSenha = document.getElementById('novaSenha').value;
-    if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
-    usuario.updatePassword(novaSenha)
-      .then(() => log('ok', 'Senha atualizada com sucesso'))
-      .catch(logErro);
-  }
+    // ------------------------------------------------------
+    // Ações: e-mails do Authentication
+    // ------------------------------------------------------
+    function acaoEnviarVerificacao() {
+      const usuario = auth.currentUser;
+      if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
+      usuario.sendEmailVerification()
+        .then(() => log('ok', 'E-mail de verificação enviado', 'Enviado para: ' + usuario.email))
+        .catch(logErro);
+    }
 
-  // ------------------------------------------------------
-  // Ações: reautenticação e exclusão
-  // ------------------------------------------------------
-  function acaoReautenticar() {
-    const usuario = auth.currentUser;
-    const senha = document.getElementById('reautSenha').value;
-    if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
-    const credencial = firebase.auth.EmailAuthProvider.credential(usuario.email, senha);
-    usuario.reauthenticateWithCredential(credencial)
-      .then(() => log('ok', 'Reautenticação concluída', 'Agora repita a ação que exigia login recente.'))
-      .catch(logErro);
-  }
+    function acaoResetSenha() {
+      const email = document.getElementById('resetEmail').value;
+      auth.sendPasswordResetEmail(email)
+        .then(() => log('ok', 'E-mail de redefinição enviado', 'Enviado para: ' + email))
+        .catch(logErro);
+    }
 
-  function acaoExcluirConta() {
-    const usuario = auth.currentUser;
-    if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
-    usuario.delete()
-      .then(() => log('ok', 'Conta excluída com sucesso'))
-      .catch(logErro);
-  }
-</script>
+    function acaoAtualizarEmail() {
+      const usuario = auth.currentUser;
+      const novoEmail = document.getElementById('novoEmail').value;
+      if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
+      usuario.verifyBeforeUpdateEmail(novoEmail)
+        .then(() => log('ok', 'Confirmação enviada ao novo e-mail', 'Enviado para: ' + novoEmail))
+        .catch(logErro);
+    }
 
+    function acaoAtualizarSenha() {
+      const usuario = auth.currentUser;
+      const novaSenha = document.getElementById('novaSenha').value;
+      if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
+      usuario.updatePassword(novaSenha)
+        .then(() => log('ok', 'Senha atualizada com sucesso'))
+        .catch(logErro);
+    }
+
+    // ------------------------------------------------------
+    // Ações: reautenticação e exclusão
+    // ------------------------------------------------------
+    function acaoReautenticar() {
+      const usuario = auth.currentUser;
+      const senha = document.getElementById('reautSenha').value;
+      if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
+      const credencial = firebase.auth.EmailAuthProvider.credential(usuario.email, senha);
+      usuario.reauthenticateWithCredential(credencial)
+        .then(() => log('ok', 'Reautenticação concluída', 'Agora repita a ação que exigia login recente.'))
+        .catch(logErro);
+    }
+
+    function acaoExcluirConta() {
+      const usuario = auth.currentUser;
+      if (!usuario) { log('erro', 'sem-usuario-logado', 'Faça login antes de testar isto.'); return; }
+      usuario.delete()
+        .then(() => log('ok', 'Conta excluída com sucesso'))
+        .catch(logErro);
+    }
+  </script>
 </body>
+
 </html>
