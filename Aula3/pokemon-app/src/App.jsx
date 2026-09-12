@@ -2,18 +2,46 @@ import { useState } from "react";
 import "./App.css";
 
 function App() {
+  const [nomeInput, setNomeInput] = useState("");
+  
   const [pokemon, setPokemon] = useState(null);
 
-  async function buscarPokemon() {
-    const resposta = await fetch("https://pokeapi.co/api/v2/pokemon/charmander");
-    const dados = await resposta.json();
-    setPokemon(dados);
+  async function buscarPokemon(e) {
+    e.preventDefault();
+    
+    if (!nomeInput.trim()) return;
+
+    try {
+      const resposta = await fetch(`https://pokeapi.co/api/v2/pokemon/${nomeInput.toLowerCase()}`);
+      
+      if (!resposta.ok) {
+        alert("Pokémon não encontrado!");
+        setPokemon(null);
+        return;
+      }
+
+      const dados = await resposta.json();
+      setPokemon(dados);
+    } catch (erro) {
+      console.error("Erro ao buscar o Pokémon:", erro);
+    }
   }
+
+  const handleChange = (e) => {
+    setNomeInput(e.target.value);
+  };
 
   return (
     <div>
       <h1>Pokémon</h1>
-      <button onClick={buscarPokemon}>Buscar Pokémon</button>
+      <form onSubmit={buscarPokemon}>
+        <label>
+          Digite o nome do pokemon:
+          <input type="text" value={nomeInput} onChange={handleChange} />
+        </label>
+        <button type="submit">Buscar Pokémon</button>
+      </form>
+
       {pokemon && (
         <div>
           <h2>{pokemon.name}</h2>
